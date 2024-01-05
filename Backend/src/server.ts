@@ -12,21 +12,22 @@ import adminResolver from './modules/admin/interface/resolver/resolver'
 const app = express()
 config()
 
-const dbLink:string = String(process.env.DB_LINK)
+const dbLink: string = String(process.env.DB_LINK)
 connectDb(dbLink)
 
 
 const combinedSchema = makeExecutableSchema({
-    typeDefs : [userSchema,adminSchema],
-    resolvers : [userResolver,adminResolver]
+    typeDefs: [userSchema, adminSchema],
+    resolvers: [userResolver, adminResolver]
 })
 
 
 app.use("/graphql",
-graphqlHTTP({
-    schema:combinedSchema,
-    // rootValue:resolvers
-})
+    graphqlHTTP((req, res) => ({
+        schema: combinedSchema,
+        // rootValue:resolvers
+        context: { token: req.headers.token }
+    }))
 )
 
-app.listen(4000,()=>console.log(`GraphQl server is running ..`))
+app.listen(4000, () => console.log(`GraphQl server is running ..`))

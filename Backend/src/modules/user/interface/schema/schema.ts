@@ -6,38 +6,46 @@ let userSchema = buildSchema(`
     }
     
     type Mutation {
-        signUp(input: SignUpInput): String
-        login(input: LoginInput): String
+        signUp(input: SignUpInput): SignUpResponse
+        login(input: LoginInput): LoginResponse
+        Hi(input: HiInput): HiResponse
+        UserLogin(input: LoginInput): LoginResponse
     }
 
 
 
 
-
-
-
-
-
+    input HiInput {
+        name: String!
+    }
 
     input SignUpInput {
-        username: String!
-        email: String!
+        id: String!
         password: String!
     }
 
+    type SignUpResponse {
+        success: Boolean
+        message: String
+    }
+
+    type LoginResponse {
+        success: Boolean
+        message: String
+        token : String
+    }
+
     input LoginInput {
-    id: String!
-    password: String!
-  }
+        id: String!
+        password: String!
+    }
+
+
+    type HiResponse {
+        success: Boolean
+        message: String
+    }
 `);
 
 export default userSchema;
 
-
-
-// export const loginSchema = `
-//   input LoginInput {
-//     id: String!
-//     password: String!
-//   }
-// `;
