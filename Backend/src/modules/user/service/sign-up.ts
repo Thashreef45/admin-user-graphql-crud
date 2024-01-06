@@ -1,30 +1,30 @@
-import {hash} from 'bcrypt'
+import { hash } from 'bcrypt'
 import repository from "../infrastructure/repository/repository"
 
 
-const userSignUp = async (_:any,{input}:{input:{id:string,password:string}}) => {
-
+const userSignUp = async (_: any, { input }: { input: { name: string, id: string, password: string } }) => {
     let alreadyExist = await repository.findUser(input.id)
-    if(alreadyExist){
+    if (alreadyExist) {
         return {
-            success:false,
-            message : "User already exists"
+            success: false,
+            message: "User already exists"
         }
-    }else{
-        
+    } else {
+
         //hashing password 
-        input.password = String(await hash(input.password,10))
+        input.password = String(await hash(input.password, 10))
 
         let created = await repository.createUser(input)
-        if(created){
+        console.log('inserted,',created)
+        if (created) {
             return {
-                success:true,
-                message : "User registered successfully"
+                success: true,
+                message: "User registered successfully"
             }
-        }else{
+        } else {
             return {
-                success:false,
-                message : "Failed to register user"
+                success: false,
+                message: "Failed to register user"
             }
         }
     }

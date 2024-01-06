@@ -19,6 +19,8 @@ const verifyToken = (userToken:string) => {
                 message:"Forbidden",
             }
         }
+
+        else return user
     }catch{
         return {
             success:false,

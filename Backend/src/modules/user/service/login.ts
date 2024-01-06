@@ -1,13 +1,13 @@
 import { compare } from "bcrypt";
 import generateToken from "../../../utils/generate-token";
 import userModel from "../infrastructure/schema/schema"
+import repository from "../infrastructure/repository/repository";
 import verifyToken from "../interface/middleware/middleware";
 
 
 const userLogin = async (_: any, { input }: { input: { id: string, password: string } } , context:any) => {
-    let hi = verifyToken(context.token)
-    console.log('userlogn reached',context.token,'context',hi)
-    const user = await userModel.findOne({ id: input.id })
+    // const user = await userModel.findOne({ id: input.id })
+    const user = await repository.findUser(input.id)
     if (!user) {
         return {
             success: false,
