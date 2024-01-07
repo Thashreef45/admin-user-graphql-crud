@@ -1,4 +1,4 @@
-import {useState , useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -10,19 +10,29 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from 'axios';
 import axiosGraphQl from '../../services/axios';
+import { useNavigate } from 'react-router-dom';
 const api = import.meta.env.VITE_GraphQl_Server
 
 
-const Login = () => {
+const SignUp = () => {
 
+
+    const navigate = useNavigate()
     const [email, setEmail] = useState("");
-    const [name,setName] = useState("")
-    const [password,setPassword] = useState("")
+    const [name, setName] = useState("")
+    const [password, setPassword] = useState("")
+    const [err, setErr] = useState("");
+    const [success, setSuccess] = useState("")
+
+    useEffect(()=>{
+        if(localStorage.getItem('userToken'))navigate('/user/home')
+    })
 
 
-    const handleSubmit = async() => {
+
+    const handleSubmit = async () => {
         try {
-            let data = JSON.stringify({
+            let query = JSON.stringify({
                 query: `
                 mutation {
                     signUp(input: {
@@ -35,18 +45,30 @@ const Login = () => {
                     }
                   }
                 `,
-              })
-              console.log(api);
-            //   const response = await axiosGraphQl.post('',data,{headers:{'Content-Type':'application/json'}})
-            const response = await axios.post(String(api),data,{headers:{'Content-Type':'application/json'}}).data.data
-            console.log(response.signUp);
-          } catch (error) {
+            })
+            const response = await axiosGraphQl.post('/', query, { headers: { 'Content-Type': 'application/json' } })
+
+            if (!response.data.data.signUp.success) {
+                setErr(response.data.data.signUp.message)
+                setTimeout(() => {
+                    setErr("")
+                }, 2000)
+            } else {
+                setSuccess(response.data.data.signUp.message)
+                setTimeout(() => {
+                    setSuccess("")
+                    navigate("/user/login")
+                }, 1500)
+
+            }
+
+        } catch (error) {
             console.error('Error in handleSubmit:', error);
-          }
+        }
     };
 
     return (
-        <Container component="main" sx={{mt:25}} maxWidth="xs">
+        <Container component="main" sx={{ mt: 25 }} maxWidth="xs">
             <Box
                 sx={{
                     marginTop: 8,
@@ -72,7 +94,7 @@ const Login = () => {
                         autoComplete="email"
                         autoFocus
                         value={email}
-                        onChange={(e)=>setEmail(e.target.value)}
+                        onChange={(e) => setEmail(e.target.value)}
 
                     />
                     <TextField
@@ -85,7 +107,7 @@ const Login = () => {
                         autoComplete="name"
                         autoFocus
                         value={name}
-                        onChange={(e)=>setName(e.target.value)}
+                        onChange={(e) => setName(e.target.value)}
                     />
                     <TextField
                         margin="normal"
@@ -97,7 +119,7 @@ const Login = () => {
                         id="password"
                         autoComplete="current-password"
                         value={password}
-                        onChange={(e)=>setPassword(e.target.value)}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
 
                     <Button
@@ -105,11 +127,11 @@ const Login = () => {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
-                        onClick={()=>handleSubmit()}
+                        onClick={() => handleSubmit()}
                     >
                         Submit
                     </Button>
-                    <Grid container sx={{display:'flex',justifyContent:'center'}}>
+                    <Grid container sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Grid item>
                             <Link href="/user/login" variant="body2">
                                 {"Already have an account? Login"}
@@ -117,9 +139,11 @@ const Login = () => {
                         </Grid>
                     </Grid>
                 </Box>
+                {err && <Typography sx={{ mt: 2, color: 'red' }}>{err}</Typography>}
+                {success && <Typography sx={{ mt: 2, color: 'green' }}>{success}</Typography>}
             </Box>
         </Container>
     );
 }
 
-export default Login
+export default SignUp

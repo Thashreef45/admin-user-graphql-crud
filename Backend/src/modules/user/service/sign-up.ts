@@ -15,7 +15,6 @@ const userSignUp = async (_: any, { input }: { input: { name: string, id: string
         input.password = String(await hash(input.password, 10))
 
         let created = await repository.createUser(input)
-        console.log('inserted,',created)
         if (created) {
             return {
                 success: true,

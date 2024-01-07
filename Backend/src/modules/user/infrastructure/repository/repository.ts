@@ -6,7 +6,6 @@ export default {
     },
 
     createUser: async (data: { id: string, name: string, password: string }) => {
-        console.log(data, 'repo@@@')
         const newUser = new userModel({
             id: data.id,
             name: data.name,

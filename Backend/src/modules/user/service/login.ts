@@ -6,7 +6,6 @@ import verifyToken from "../interface/middleware/middleware";
 
 
 const userLogin = async (_: any, { input }: { input: { id: string, password: string } } , context:any) => {
-    // const user = await userModel.findOne({ id: input.id })
     const user = await repository.findUser(input.id)
     if (!user) {
         return {

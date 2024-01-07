@@ -1,4 +1,4 @@
-import {useEffect}  from 'react';
+import { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -9,22 +9,52 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import axiosGraphQl from '../../services/axios';
+import { useNavigate } from 'react-router-dom';
 
 
 const Login = () => {
 
-    useEffect
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+    const navigate = useNavigate()
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("")
+    const [err, setErr] = useState("");
+
+    useEffect(()=>{
+        if(localStorage.getItem('userToken'))navigate('/user/home')
+    })
+
+
+    const handleSubmit = async () => {
+        let query = JSON.stringify({
+            query: `
+            mutation {
+                UserLogin(input: {
+                  id: "${email}",
+                  password: "${password}",
+                }) {
+                  success
+                  message
+                  token
+                }
+              }
+            `,
+        })
+
+        const response = await axiosGraphQl.post('/', query, { headers: { 'Content-Type': 'application/json' } })
+        if (!response.data.data.UserLogin.success) {
+            setErr(response.data.data.UserLogin.message)
+            setTimeout(() => {
+                setErr("")
+            }, 2000)
+        } else {
+            localStorage.setItem('userToken',`Bearer ${response.data.data.UserLogin.token}`)
+            navigate("/user/home")
+        }
     };
 
     return (
-        <Container component="main" sx={{mt:25}} maxWidth="xs">
+        <Container component="main" sx={{ mt: 25 }} maxWidth="xs">
             <Box
                 sx={{
                     marginTop: 8,
@@ -49,6 +79,7 @@ const Login = () => {
                         name="email"
                         autoComplete="email"
                         autoFocus
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                     <TextField
                         margin="normal"
@@ -59,17 +90,18 @@ const Login = () => {
                         type="password"
                         id="password"
                         autoComplete="current-password"
+                        onChange={(e) => setPassword(e.target.value)}
                     />
 
                     <Button
-                        type="submit"
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
+                        onClick={() => handleSubmit()}
                     >
                         Sign In
                     </Button>
-                    <Grid container sx={{display:'flex',justifyContent:'center'}}>
+                    <Grid container sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Grid item>
                             <Link href="/user/signup" variant="body2">
                                 {"Don't have an account? Sign Up"}
@@ -77,6 +109,7 @@ const Login = () => {
                         </Grid>
                     </Grid>
                 </Box>
+                {err && <Typography sx={{ mt: 2, color: 'red' }}>{err}</Typography>}
             </Box>
         </Container>
     );

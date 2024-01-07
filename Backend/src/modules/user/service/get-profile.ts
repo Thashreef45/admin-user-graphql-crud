@@ -9,11 +9,11 @@ const getUserProfile = async (_: any, __: any, context: { token: string }) => {
         if(!user) return user
         userData = await repository.findUser(user?.id)
     }
-    console.log(userData,'ddata')
 
     if (userData) {
         return {
-            name: userData.id,
+            id: userData.id,
+            name : userData.name,
             message: "Profile found",
             success: true
         }
