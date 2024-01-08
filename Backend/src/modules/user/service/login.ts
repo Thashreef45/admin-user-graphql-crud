@@ -1,8 +1,6 @@
 import { compare } from "bcrypt";
 import generateToken from "../../../utils/generate-token";
-import userModel from "../infrastructure/schema/schema"
 import repository from "../infrastructure/repository/repository";
-import verifyToken from "../interface/middleware/middleware";
 
 
 const userLogin = async (_: any, { input }: { input: { id: string, password: string } } , context:any) => {
@@ -16,6 +14,12 @@ const userLogin = async (_: any, { input }: { input: { id: string, password: str
         if (user.password) {
             const checkPassword = await compare(input.password, user.password)
             if (checkPassword) {
+                if(user.isBlocked){
+                    return {
+                        success: false,
+                        message: "User have been blocked",
+                    };
+                }
                 return {
                     success: true,
                     message: "Login success",

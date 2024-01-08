@@ -5,10 +5,6 @@ import userSignUp from "../../service/sign-up";
 
 const userResolver = {
   Query: {
-    Hello: () => {
-      return "Hey Thashreef";
-    },
-    
     GetProfile:getUserProfile,
   },
 
@@ -18,12 +14,6 @@ const userResolver = {
 
     login: async (_: any, { input }: { input: {id:string,password:string} }) => {
       //
-    },
-
-
-    Hi: (_: any, { input }: { input: { name: string } }) => {
-        console.log(`Hello, ${input.name}!`);
-        return {success:true,message:`Hey, ${input.name}!`}
     }
   }
 };

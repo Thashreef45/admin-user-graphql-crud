@@ -2,23 +2,16 @@ import { buildSchema } from "graphql";
 
 let userSchema = buildSchema(`
     type Query {
-        Hello: String
         GetProfile:GetProfileRes
     }
     
     type Mutation {
         signUp(input: SignUpInput): SignUpResponse
-        login(input: LoginInput): LoginResponse
-        Hi(input: HiInput): HiResponse
         UserLogin(input: LoginInput): LoginResponse
+        login(input: LoginInput): LoginResponse
     }
 
 
-
-
-    input HiInput {
-        name: String!
-    }
 
     input SignUpInput {
         id: String!
@@ -40,12 +33,6 @@ let userSchema = buildSchema(`
     input LoginInput {
         id: String!
         password: String!
-    }
-
-
-    type HiResponse {
-        success: Boolean
-        message: String
     }
 
     type GetProfileRes {
